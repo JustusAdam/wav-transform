@@ -10,13 +10,9 @@ public class WavTransform {
     public static void fromFile(String path, String outPath) throws IOException, WavFileException {
         final WavFile f = WavFile.openWavFile(new File(path));
 
-        f.display();
-
         final double[][] splitFrames = new double[f.getNumChannels()][BlOCK_LEN];
         int read = BlOCK_LEN;
         final WavFile writeableFile = WavFile.newWavFile(new File(outPath), f.getNumChannels(), f.getNumFrames(), f.getValidBits(), f.getSampleRate());
-
-        int offset = 0;
 
         while (read == BlOCK_LEN && f.getFramesRemaining() != 0) {
 
@@ -27,8 +23,8 @@ public class WavTransform {
             
             }
 
-            writeableFile.writeFrames(splitFrames, offset, read);
-            offset += read;
+            writeableFile.writeFrames(splitFrames, read);
+            
         }
 
         f.close();
@@ -42,7 +38,6 @@ public class WavTransform {
         Complex[] arr = fftTransfromer.transform(intermediate, TransformType.INVERSE);
 
         for (int i = 0; i < arr.length; i ++) {
-            if (arr[i].getImaginary() > 0.0001) throw new RuntimeException("I am imaginary");
             data[i] = arr[i].getReal();
         }
     }
